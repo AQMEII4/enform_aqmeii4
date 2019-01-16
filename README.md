@@ -29,3 +29,18 @@ $ ./compile_aq
 $ cd ../ens2nc
 $ ./compile_ens2nc_aq
 ```
+Go to `test_aq` directory and run `go_test_aq.sh`:
+```
+$ cd ../test_aq
+$ ./go_test_aq.sh
+```
+This script calls in sequence:
+
+1. `client/enform_aq` to create a .ens file from a dummy model output
+2. `client/deform_aq` to create a set of ASCII files form an existing .ens file (in this case the .ens file created at step 1).
+3. `client/ens2nc_aq` to convert the .ens content in one or mode netCDF files
+
+
+
+
+
