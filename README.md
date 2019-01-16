@@ -38,7 +38,9 @@ This script calls in sequence:
 
 1. `client/enform_aq` to create a .ens file from a dummy model output
 2. `client/deform_aq` to create a set of ASCII files form an existing .ens file (in this case the .ens file created at step 1).
-3. `client/ens2nc_aq` to convert the .ens content in one or mode netCDF files
+3. `client/ens2nc_aq` to convert the .ens content in one or more netCDF files
+
+See other `test_` directories for examples on using the codes.
 
 
 
