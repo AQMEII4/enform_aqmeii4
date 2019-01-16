@@ -2,9 +2,9 @@
 
 This is the set of FORTRAN routines and Perl scripts to postprocess at client's side the model output files for the ENSEMBLE non nuclear activities, before transferring them to the ENSEMBLE platform.
 
-This package also includes the routines to produce ASCII (.dat) and netCDF (.nc) files starting from encoded grid files generated with enform_aq (files .ens). These codes are deform_aq and ens2nc_aq and their use is described below.
+This package also includes the routines to produce ASCII (.dat) and netCDF (.nc) files starting from encoded grid files generated with `enform_aq` (files .ens). These codes are `deform_aq` and `ens2nc_aq` and their use is described below.
 
-Additional information is in file [ENFORM_SOFTWARE_README.TXT](ENFORM_SOFTWARE_README.TXT)
+Additional information, also for `enform_aqr`, is in file [ENFORM_SOFTWARE_README.TXT](ENFORM_SOFTWARE_README.TXT)
 
 ## Usage of enform, deform and ens2nc
 
