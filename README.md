@@ -23,4 +23,9 @@ in folder test_aq.
 
 This script calls, for each iof these programs, a Perl driver that could also be used as alternative to call the command line of each program.
 
-Additional information is in file ENFORM_SOFTWARE_README.TXT(ENFORM_SOFTWARE_README.TXT)
+Clone and unzip this archive
+
+```
+unzip 
+
+Additional information is in file [ENFORM_SOFTWARE_README.TXT] (ENFORM_SOFTWARE_README.TXT)
