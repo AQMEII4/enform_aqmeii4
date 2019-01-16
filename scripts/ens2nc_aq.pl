@@ -20,6 +20,7 @@ my ($ens_file,$src_file,$cf_file,$output_dir,$log_dir);
 my $force = 0;
 
 my $exe_file = "$Bin/../ens2nc/ens2nc_aq";
+die "Executable $exe_file does not exist. Compile it first.\n" unless (-e $exe_file);
 
 &GetOptions(
     "ens_file=s", \$ens_file,

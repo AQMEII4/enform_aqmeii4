@@ -14,6 +14,9 @@ use Getopt::Long;
 
 my $VERSION = '20190115';
 
+my $exe_file = "$Bin/../client/enform_aq";
+die "Executable $exe_file does not exist. Compile it first.\n" unless (-e $exe_file);
+
 my ($model_file,$src_file,$ens_dir);
 
 &GetOptions(
@@ -27,7 +30,6 @@ unless ($model_file && $src_file) {
                           \n\n";
 }
 
-my $exe_file = "$Bin/../client/enform_aq";
 my @cmd = ($exe_file,$src_file,$model_file);
 system(@cmd);
 print "\n\nCommand issued was:\n";
