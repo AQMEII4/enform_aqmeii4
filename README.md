@@ -36,9 +36,21 @@ $ ./go_test_aq.sh
 ```
 This script calls in sequence:
 
-1. `client/enform_aq` to create a .ens file from a dummy model output
-2. `client/deform_aq` to create a set of ASCII files form an existing .ens file (in this case the .ens file created at step 1).
-3. `client/ens2nc_aq` to convert the .ens content in one or more netCDF files
+1. `../scripts/encode_aq.pl`, driver for `client/enform_aq` to create a .ens file from a dummy model output
+2. `../scripts/decode_aq.pl`, driver for `client/deform_aq` to create a set of ASCII files form an existing .ens file (in this case the .ens file created at step 1).
+3. `../scripts/ens2nc_aq.pl`, driver for `client/ens2nc_aq` to convert the .ens content in one or more netCDF files
+
+Call these scripts without parameters to see the required and optional input. For example:
+```
+$ perl scripts/ens2nc_aq.pl 
+
+Usage: perl scripts/ens2nc_aq.pl -ens_file=/path/to/model_output.ens \
+                         -src_file=/path/to/sequence-case.src \
+                         -cf_file=/path/to/sequence-case.cf \
+                         -output_dir=/path/to/output_dir (add final slash) \
+                         -log_dir=/path/to/log_dir (add final slash) \
+                         -force=1 to create non-existing output folder (optional)
+```
 
 See other `test_` directories for examples on using the codes.
 
