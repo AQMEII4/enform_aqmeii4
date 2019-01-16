@@ -23,9 +23,25 @@ in folder test_aq.
 
 This script calls, for each iof these programs, a Perl driver that could also be used as alternative to call the command line of each program.
 
-Clone and unzip this archive
-
+Download (or clone) this archive:
 ```
-unzip 
+$ wget https://github.com/enviroware/enform_aqmeii4/archive/master.zip
+```
+Unzip it:
+```
+$ unzip master.zip
+```
+Compile the executables:
+```
+$ cd enform_aqmeii4-master/client
+$ ./compile
+$ cd ../server
+$ ./compile_aq
+$ cd ../ens2nc
+$ ./compile_ens2nc_aq
+```
+
+
+
 
 Additional information is in file [ENFORM_SOFTWARE_README.TXT] (ENFORM_SOFTWARE_README.TXT)
