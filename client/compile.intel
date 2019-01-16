@@ -1,0 +1,7 @@
+'rm' enform_aq enform_aqr
+
+ifort -o enform_aq -O3 -fno-alias -mp1 -fp-model source enform_aq.for
+ifort -o enform_aqr -O3 -fno-alias -mp1 -fp-model source enform_aqr.for
+
+#ifort -o enform_aq -O0 -g -check bounds -check uninit -fpe0 -fno-alias -ftrapuv -traceback enform_aq.for
+#ifort -o enform_aqr -O0 -g -check bounds -check uninit -fpe0 -fno-alias -ftrapuv -traceback enform_aqr.for

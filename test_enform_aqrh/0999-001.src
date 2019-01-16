@@ -1,0 +1,29 @@
+Enform version                  $ 20150930
+Enform type                     $ AQRH
+Random key                      $ EIALMBY
+Sequence number                 $  999
+Case number                     $   1
+Creation date (UTC)             $ 201502231600
+Title                           $ Test Hires
+# 
+Coordinates (LL or UTM)         $ UTM
+UTM zone                        $ 14
+Hemisphere                      $ N
+# 
+First output (UTC)              $ 2003062914000050
+Time horizon of forecast (UTC)  $ 2003062917000000
+Number of outputs               $ 21600
+Dt_out, Dt_start, Dt_end (s)    $   0.5     0   0.5
+# 
+Number of variables             $  1
+# 
+Variable                        $ SF6
+Code                            $ 01
+Number of items                 $ 01
+Item                            $ 01, Concentration @ 0m, pptv, 0.1, -9
+  Number of postprocessings     $ 1
+  Postprocessing statistics     $ N
+# 
+Number of receptors             $   2
+00001,634911,3925909
+00002,634693,3925913

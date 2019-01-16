@@ -1,0 +1,2 @@
+gfortran -o ens2nc_aq -O3 -I/usr/include ens2nc_aq.for -lnetcdff -lnetcdf -lnetcdf
+

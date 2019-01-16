@@ -1,0 +1,63 @@
+Enform version                  $ 20190101
+Enform type                     $ AQR
+Random key                      $ EIALMBY
+Sequence number                 $  999
+Case number                     $   1
+Creation date (UTC)             $ 201006071600
+Title                           $ Test
+# 
+Coordinates (LL or UTM)         $ LL
+# 
+First output (UTC)              $ 200901010000
+Time horizon of forecast (UTC)  $ 200912312300
+Number of outputs               $  8760
+Dt_out, Dt_start, Dt_end (min)  $    60     0    60
+# 
+Number of variables             $  5
+# 
+Variable                        $ O3
+Code                            $ 01
+Number of items                 $ 01
+Item                            $ 01, Concentration @ 0m, ppb, 0.01, -9
+  Number of postprocessings     $ 2
+  Postprocessing statistics     $ N
+  Postprocessing statistics     $ P, AVG
+# 
+Variable                        $ SO2
+Code                            $ 02
+Number of items                 $ 01
+Item                            $ 01, Concentration @ 0m, ppb, 0.01, -9
+  Number of postprocessings     $ 2
+  Postprocessing statistics     $ N
+  Postprocessing statistics     $ P, AVG
+# 
+Variable                        $ CO
+Code                            $ 03
+Number of items                 $ 01
+Item                            $ 01, Concentration @ 0m, ppb, 0.01, -9
+  Number of postprocessings     $ 2
+  Postprocessing statistics     $ N
+  Postprocessing statistics     $ P, AVG
+# 
+Variable                        $ NO2
+Code                            $ 04
+Number of items                 $ 01
+Item                            $ 01, Concentration @ 0m, ppb, 0.01, -9
+  Number of postprocessings     $ 2
+  Postprocessing statistics     $ N
+  Postprocessing statistics     $ P, AVG
+# 
+Variable                        $ HNO3
+Code                            $ 05
+Number of items                 $ 01
+Item                            $ 01, Concentration @ 0m, ppb, 0.01, -9
+  Number of postprocessings     $ 2
+  Postprocessing statistics     $ N
+  Postprocessing statistics     $ P, AVG
+# 
+Number of receptors             $   5
+00001,-179.9972, -66.3232
+00002, -14.8860,   5.8981
+00003,-163.0639,  32.1956
+00004, 156.4894, -20.9696
+00005, 119.1475, -83.7770

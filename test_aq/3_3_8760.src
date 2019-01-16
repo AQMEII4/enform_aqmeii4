@@ -1,0 +1,34 @@
+Enform version                  $ 20190101
+Enform type                     $ AQ
+Random key                      $ ABCDEFG
+Sequence number                 $ 0001
+Case number                     $ 001
+Creation date (UTC)             $ 201008091000
+Title                           $ TEST 3x3x8760
+#
+Coordinates (LL or UTM)         $ LL
+Xmin (deg E or m)               $      -30.0000
+Ymin (deg E or m)               $       25.0000
+Nx                              $  3
+Ny                              $  3
+Dx (deg or m)                   $      0.250
+Dy (deg or m)                   $      0.250
+#
+First output (UTC)              $ 200601010100
+Time horizon of forecast (UTC)  $ 200701010000
+Number of outputs               $ 8760
+Dt_out, Dt_start, Dt_end (min)  $    60     0    60 
+#
+Number of variables             $  1
+#
+Variable                        $ SO2
+Code                            $ 01
+Number of items                 $ 1
+Item                            $ 01, Concentration @ 0 m, ug m-3, 1., -9
+  Number of postprocessings     $ 4
+  Postprocessing statistics     $ N
+  Postprocessing statistics     $ D, AVG
+  Postprocessing statistics     $ D, INT
+  Postprocessing statistics     $ P, INT
+#
+Comments follow                 $ N

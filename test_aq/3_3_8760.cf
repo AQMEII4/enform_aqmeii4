@@ -1,0 +1,47 @@
+Enform version                  $ 20190101
+Enform type                     $ AQ
+Random key                      $ ABCDEFG
+Sequence number                 $ 0001
+Case number                     $ 001
+Creation date (UTC)             $ 201008091000
+Title                           $ TEST 3x3x8760
+#
+Coordinates (LL or UTM)         $ LL
+Xmin (deg E or m)               $      -30.0000
+Ymin (deg E or m)               $       25.0000
+Nx                              $ 3
+Ny                              $ 3
+Dx (deg or m)                   $        0.2500
+Dy (deg or m)                   $        0.2500
+#
+First output (UTC)              $ 200601010100
+Time horizon of forecast (UTC)  $ 200701010000
+Number of outputs               $  8760
+Dt_out, Dt_start, Dt_end (min)  $    60     0    60 
+#
+Conventions                     $ CF-1.6
+Longitude units                 $ degrees_east
+Latitude units                  $ degrees_north
+#
+Number of variables             $  1
+#
+Variable                        $ SO2
+Code                            $ 01
+Description                     $ Sulphur dioxide
+Number of items                 $ 1
+Item                            $ 01
+CF standard_name                $ -
+CF canonical_units              $ 
+CF long_name                    $ Sulphur dioxide
+Description                     $ Hourly concentration @ 0 m [ug m-3] (Precision 0.01)
+Units                           $ ug m-3
+CF missing_value                $ -9
+CF fill_value                   $ 
+  Number of postprocessings     $ 4
+  Postprocessing statistics     $ 'hours since 2010-01-01 00:0:0 0 UTC', N
+  Postprocessing statistics     $ 'days since 2010-01-01 00:0:0 0 UTC', D
+  Postprocessing statistics     $ 'days since 2010-01-01 00:0:0 0 UTC', INT
+  Postprocessing statistics     $ '', P
+#
+Comments follow                 $ N
+

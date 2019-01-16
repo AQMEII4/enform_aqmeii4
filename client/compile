@@ -1,0 +1,6 @@
+'rm' enform_aq enform_aqr
+gfortran -o enform_aq -O3 -finit-local-zero -Wall enform_aq.for
+gfortran -o enform_aqr -O3 -finit-local-zero -Wall enform_aqr.for
+gfortran -o enform_aqrh -O3 -finit-local-zero -Wall enform_aqr.for
+#gfortran -o enform_aq -O1 -finit-local-zero -Wall -O0 -g -fcheck=all -ffpe-trap=invalid,zero,overflow -fbacktrace enform_aq.for
+#gfortran -o enform_aqr -O1 -finit-local-zero -Wall -O0 -g -fcheck=all -ffpe-trap=invalid,zero,overflow -fbacktrace enform_aqr.for

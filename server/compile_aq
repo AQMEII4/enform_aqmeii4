@@ -1,0 +1,1 @@
+gfortran -o deform_aq -O3 -finit-local-zero -fno-align-commons -Wall -fbounds-check -fcheck-array-temporaries deform_aq.for
