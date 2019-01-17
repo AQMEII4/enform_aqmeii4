@@ -509,6 +509,7 @@ C     they will store the error message in case an error occours.
 
          IF (AVERAGING(ICODE,USER_ITEM,IPOST) .EQ. 'D' .OR.
      &       AVERAGING(ICODE,USER_ITEM,IPOST) .EQ. 'M' .OR.
+     &       AVERAGING(ICODE,USER_ITEM,IPOST) .EQ. 'MD' .OR. ! rbi 20190101
      &       AVERAGING(ICODE,USER_ITEM,IPOST) .EQ. 'Q' ) THEN
 
              IF (STATISTICS(ICODE,USER_ITEM,IPOST) .EQ. 'MAX' .OR.
@@ -518,10 +519,15 @@ C     they will store the error message in case an error occours.
                  ENDDO
              ELSE
                  CALL GENERATE_DATES(SOURCE_FIRST_OUTPUT,
-     &                    OUTPUT_DATES,DELTA_MINUTES,NT)
-                 CALL FIND_OUTPUT_DATES(OUTPUT_DATES,
-     &                     AVERAGING(ICODE,USER_ITEM,IPOST),
-     &                     OUTPUT_DATES_WORK,NT)
+     &                OUTPUT_DATES,DELTA_MINUTES,NT)
+                 IF (AVERAGING(ICODE,USER_ITEM,IPOST) .EQ. 'MD') THEN
+                     CALL GENERATE_OUTPUT_DATES_MD(OUTPUT_DATES,
+     &                    OUTPUT_DATES_WORK,NT)
+                 ELSE
+                     CALL FIND_OUTPUT_DATES(OUTPUT_DATES,
+     &                    AVERAGING(ICODE,USER_ITEM,IPOST),
+     &                    OUTPUT_DATES_WORK,NT)
+                 ENDIF
              ENDIF
          ELSE
              CALL GENERATE_DATES(SOURCE_FIRST_OUTPUT,
@@ -664,6 +670,7 @@ C
       INCLUDE '../lib/parse_item.for'
       INCLUDE '../lib/readrec.for'
 
+      INCLUDE '../lib_server/generate_output_dates_md.for'
       INCLUDE '../lib_server/find_output_dates.for'
       INCLUDE '../lib_server/write_xml.for'
       INCLUDE '../lib_server/write_status_c_xml.for'

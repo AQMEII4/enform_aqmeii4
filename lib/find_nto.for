@@ -90,6 +90,7 @@ C --- Find first date, based on AVGTYPE
              IF (.NOT. LMATCHMD) THEN
                  NTO = NTO + 1
                  ICURRMD(NTO) = IVAL
+                 write(6,*) NTO, ICURRMD(NTO)
              ENDIF
             
          ENDIF  
