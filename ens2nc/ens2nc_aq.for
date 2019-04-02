@@ -497,11 +497,7 @@ C --- Here we prepare some netCDF variables of general use
 C --- Now loop on the statistics that the file might contain.
 C     We create a netCDF file for each of them
 
-      IV = USER_ITEM - 1
-
       DO IPOST = 1, SOURCE_ITEM_NPOSTS(ICODE,USER_ITEM)
-
-         IV = IV + 1
 
 C --- Open file
 
@@ -520,7 +516,7 @@ C --- Open file
          WRITE(ST1(17:18),'(I2.2)') TMP_VAR
 
          ST3 = '00'
-         WRITE(ST3(1:2),'(I2.2)') IV
+         WRITE(ST3(1:2),'(I2.2)') IPOST
          ST2 = ' '
          WRITE(ST2(1:12),'(I4.4,4I2.2)') (TMP_METEO_DATE(K),K=1,5)
          OUTPUT_B = OUTPUT_BASE(1:LSTRIM(OUTPUT_BASE))//'v'//
@@ -607,8 +603,9 @@ C     Assign units attributes to coordinate and variables.
      &            'axis',1,'X')
          IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
          RETVAL = NF_PUT_ATT_TEXT(NCID, TIME_VARID,
-     &            'units', len(TRIM(CF_TIME_UNITS(ICODE,IV,IPOST))), 
-     &             TRIM(CF_TIME_UNITS(ICODE,IV,IPOST)))
+     &            'units',
+     &            len(TRIM(CF_TIME_UNITS(ICODE,USER_ITEM,IPOST))), 
+     &             TRIM(CF_TIME_UNITS(ICODE,USER_ITEM,IPOST)))
          IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
          RETVAL = NF_PUT_ATT_TEXT(NCID, TIME_VARID, 
      &            'axis',1,'T')
@@ -661,27 +658,30 @@ C     Define compression level in case of NETCDF4
 
 C     Assign attributes to the netCDF variable.
          RETVAL = NF_PUT_ATT_TEXT(NCID, VARID, 
-     &            'units', len(TRIM(CF_VAR_ITEMS_UNITS(ICODE,IV))),
-     &            TRIM(CF_VAR_ITEMS_UNITS(ICODE,IV)))
+     &            'units',
+     &            len(TRIM(CF_VAR_ITEMS_UNITS(ICODE,USER_ITEM))),
+     &            TRIM(CF_VAR_ITEMS_UNITS(ICODE,USER_ITEM)))
          IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
          RETVAL = NF_PUT_ATT_TEXT(NCID, VARID, 
      &            'long_name', 
-     &            len(TRIM(CF_VAR_ITEMS_LONG_NAME(ICODE,IV))), 
-     &            TRIM(CF_VAR_ITEMS_LONG_NAME(ICODE,IV)))
+     &            len(TRIM(CF_VAR_ITEMS_LONG_NAME(ICODE,USER_ITEM))), 
+     &            TRIM(CF_VAR_ITEMS_LONG_NAME(ICODE,USER_ITEM)))
          IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
          RETVAL = NF_PUT_ATT_TEXT(NCID, VARID, 
      &            'standard_name', 
-     &            len(TRIM(CF_VAR_ITEMS_STANDARD_NAME(ICODE,IV))), 
-     &            TRIM(CF_VAR_ITEMS_STANDARD_NAME(ICODE,IV))) 
+     &            len(TRIM(
+     &              CF_VAR_ITEMS_STANDARD_NAME(ICODE,USER_ITEM))), 
+     &            TRIM(CF_VAR_ITEMS_STANDARD_NAME(ICODE,USER_ITEM))) 
          IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
          RETVAL = NF_PUT_ATT_TEXT(NCID, VARID, 
      &            'canonical_units', 
-     &            len(TRIM(CF_VAR_ITEMS_CANONICAL_UNITS(ICODE,IV))), 
-     &            TRIM(CF_VAR_ITEMS_CANONICAL_UNITS(ICODE,IV)))
+     &            len(TRIM(
+     &              CF_VAR_ITEMS_CANONICAL_UNITS(ICODE,USER_ITEM))), 
+     &            TRIM(CF_VAR_ITEMS_CANONICAL_UNITS(ICODE,USER_ITEM)))
          RETVAL = NF_PUT_ATT_TEXT(NCID, VARID, 
      &            'description', 
-     &            len(TRIM(CF_VAR_ITEMS_DESCRIPTION(ICODE,IV))),
-     &            TRIM(CF_VAR_ITEMS_DESCRIPTION(ICODE,IV)))
+     &            len(TRIM(CF_VAR_ITEMS_DESCRIPTION(ICODE,USER_ITEM))),
+     &            TRIM(CF_VAR_ITEMS_DESCRIPTION(ICODE,USER_ITEM)))
          IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
 
 C     Assign other attributes

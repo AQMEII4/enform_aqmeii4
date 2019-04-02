@@ -46,7 +46,7 @@ C
       STATISTICS  = ' '
       PERCENTILE = 0.
 
-      DO K = 1, 4
+      DO K = 1, 3
          COMMA(K) = 0
       ENDDO
 
@@ -65,27 +65,35 @@ C
 
       TIME_UNITS = STRING(2:COMMA(1)-2)
         
-      IF (STRING(COMMA(1)+1:COMMA(2)-1) .EQ. 'N') THEN
-          AVERAGING = 'N' 
-          RETURN
-      ENDIF
+      IF (I .GT. 1) THEN
 
-      IF (STRING(COMMA(1)+1:COMMA(2)-1) .EQ. 'P') THEN
-          AVERAGING = 'P'
-      ELSE
-          AVG = STRING(COMMA(1)+1:COMMA(2)-1)
-          AVG = AVG(LSTRIML(AVG):LSTRIM(AVG))
+             AVG = STRING(COMMA(1)+1:COMMA(2)-1)
+             AVG = AVG(LSTRIML(AVG):LSTRIM(AVG))
           
-          OPEN(IUNIT,STATUS='SCRATCH')
-          WRITE(IUNIT,'(A)') AVG
-          REWIND(IUNIT)
-          READ(IUNIT,*) AVERAGING
-          CLOSE(IUNIT)
+             OPEN(IUNIT,STATUS='SCRATCH')
+             WRITE(IUNIT,'(A)') AVG
+             REWIND(IUNIT)
+             READ(IUNIT,*) AVERAGING
+             CLOSE(IUNIT)
+             IF (AVERAGING(1:1) .EQ. 'N') RETURN
+
+      ELSE
+
+             AVG = STRING(COMMA(1)+1:)
+             AVG = AVG(LSTRIML(AVG):LSTRIM(AVG))
+          
+             OPEN(IUNIT,STATUS='SCRATCH')
+             WRITE(IUNIT,'(A)') AVG
+             REWIND(IUNIT)
+             READ(IUNIT,*) AVERAGING
+             CLOSE(IUNIT)
+             IF (AVERAGING(1:1) .EQ. 'N') RETURN
+
       ENDIF
+ 
+      IF (I .EQ. 1) GOTO 900
 
-      IF (I .EQ. 0) GOTO 900
-
-      IF (I .EQ. 1) THEN
+      IF (I .EQ. 2) THEN
           STS = STRING(COMMA(2)+1:)
       ELSE
           STS = STRING(COMMA(2)+1:COMMA(3)-1)
@@ -101,7 +109,7 @@ C
       ELSE IF (STS(1:3) .EQ. 'PCT') THEN
           STATISTICS = 'PCT'
           
-          IF (I .NE. 2) GOTO 900
+          IF (I .NE. 3) GOTO 900
           OPEN(IUNIT,STATUS='SCRATCH')
           WRITE(IUNIT,'(A)') STRING(COMMA(3)+1:)
           REWIND(IUNIT)
