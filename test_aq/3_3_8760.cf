@@ -39,9 +39,9 @@ CF missing_value                $ -9
 CF fill_value                   $ 
   Number of postprocessings     $ 4
   Postprocessing statistics     $ 'hours since 2010-01-01 00:0:0 0 UTC', N
-  Postprocessing statistics     $ 'days since 2010-01-01 00:0:0 0 UTC', D
-  Postprocessing statistics     $ 'days since 2010-01-01 00:0:0 0 UTC', INT
-  Postprocessing statistics     $ '', P
+  Postprocessing statistics     $ 'days since 2010-01-01 00:0:0 0 UTC', D, AVG
+  Postprocessing statistics     $ 'days since 2010-01-01 00:0:0 0 UTC', D, INT
+  Postprocessing statistics     $ '', P, INT
 #
 Comments follow                 $ N
 
