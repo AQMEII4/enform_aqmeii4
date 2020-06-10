@@ -31,7 +31,7 @@ C --- Write output file headers
       WRITE(LOUT,'(A7)') SOURCE_RANDOM_KEY
       WRITE(LOUT,'(I4.4)') SOURCE_SEQUENCE_NUMBER
       WRITE(LOUT,'(I3.3)') SOURCE_CASE_NUMBER
-      WRITE(LOUT,'(A6)') USER_VAR
+      WRITE(LOUT,'(A20)') USER_VAR
       WRITE(LOUT,'(I2)') UI
       WRITE(LOUT,'(E11.4)') VAL_MISSING
       PREC = VAR_ITEMS_PRECISION(ICODE,UI)
@@ -151,11 +151,11 @@ C                  MVAL in sorted arrays for MAX and PCT
 
              IF (AVERAGING(ICODE,UI,IPOST) .EQ. 'D' .OR.
      &           AVERAGING(ICODE,UI,IPOST) .EQ. 'M' .OR.
-     &           AVERAGING(ICODE,UI,IPOST) .EQ. 'MD' .OR.
+C     &           AVERAGING(ICODE,UI,IPOST) .EQ. 'MD' .OR.
      &           AVERAGING(ICODE,UI,IPOST) .EQ. 'Q') THEN
 
                  IF (STATISTICS(ICODE,UI,IPOST) .EQ. 'MAX') THEN
-                     MVAL =  NTO
+                     MVAL =  NTO !this doesn't work for MD
                      NTOUT = 1
                  ELSEIF (STATISTICS(ICODE,UI,IPOST) .EQ. 'PCT') THEN
                      MVAL = NINT( 
@@ -164,7 +164,9 @@ C                  MVAL in sorted arrays for MAX and PCT
                  ELSE
                      NTOUT = NTO
                  ENDIF
-             ELSE
+             ELSEIF (AVERAGING(ICODE,UI,IPOST) .EQ. 'MD')  THEN 
+                     NTOUT = NTO !always use all MD time steps, even if using PCT
+             ELSE !period averaging, which uses IAVGH instead of NTO
                  IF (STATISTICS(ICODE,UI,IPOST) .EQ. 'MAX') THEN
                      MVAL = INT(0.5 +  NT / IAVGH )
                      NTOUT = 1
@@ -269,7 +271,7 @@ C ---------------------------------------------------------------
                            IF (LMISS) THEN
                                VALUES(I) = VAL_MISSING
                            ELSE 
-                               CALL SORT( ARR, ITOUT, WARR )
+                               CALL SORT( ARR, ITOUT, WARR ) !not sure this works because ARR appears to be empty
                                VALUES(I) = WARR(MVAL)
                            ENDIF
 
@@ -290,7 +292,126 @@ C                       --- Now encode and write
      &                           VMAX_INFO
                       WRITE(6,*) ' '
                      ENDIF              
-                 ELSE
+
+
+
+              ELSEIF ( AVERAGING(ICODE,UI,IPOST) .EQ. 'MD'  ) THEN  !CHO 20200518
+
+                  AVGTYPE = AVERAGING(ICODE,UI,IPOST)
+
+                  CALL FIX24(1,OUTPUT_DATES_24)
+                  IF (AVGTYPE .EQ. 'MD') THEN
+                    ICURRMD(1) = (OUTPUT_DATES_24(2) * 100) +
+     &              OUTPUT_DATES_24(4)      
+                  ENDIF
+                     
+                  IT = 0
+                  NTO = 1
+                  ITBEGMD = NT
+                  ITENDMD = 0
+ 
+                  DO WHILE (IT .LT. NT)
+ 
+                   IT = IT + 1
+      
+                   CALL FIX24(IT,OUTPUT_DATES_24)
+                   IF (AVGTYPE .EQ. 'MD') THEN
+                    IVAL = (OUTPUT_DATES_24(2)* 100) +
+     &              OUTPUT_DATES_24(4)
+                   ENDIF
+       
+      
+               LMATCHMD = .FALSE.
+               DO N = 1, NTO
+                    IF (IVAL .EQ. ICURRMD(N)) THEN
+             LMATCHMD = .TRUE.
+             IF ( IT .LT. ITBEGMD(N) ) ITBEGMD(N) = IT
+             IF ( IT .GT. ITENDMD(N) ) ITENDMD(N) = IT
+            ENDIF
+       
+               ENDDO
+           
+               IF (.NOT. LMATCHMD) THEN
+                    NTO = NTO + 1
+                    ICURRMD(NTO) = IVAL
+            ITBEGMD(NTO) = IT
+            ITENDMD(NTO) = IT
+                   ENDIF
+                      
+                  ENDDO
+          
+c                 DO N = 1, NTO
+c           WRITE(*,*) N, ICURRMD(N), ITBEGMD(N), ITENDMD(N)
+c          ENDDO 
+
+                     VMAX_INFO = VAL_MISSING        ! RBI 20130101
+                     DO ITO = 1, NTO
+ 
+                        DO J = NY, 1, -1
+
+                           DO I = 1, NX
+                              SOMMA(I) = 0.
+
+                              LMISS = .FALSE.
+                  
+                              ICOUNT = 0
+                              DO ITT = ITBEGMD(ITO), ITENDMD(ITO), 24
+
+                 ! RBI 20130101  - set to missing the statitics
+                 ! if the model has a non valid value
+                 IF (ABS(VALUES_GR(I,J,ITT) - VAL_MISSING).LT.EPS) THEN 
+                     LMISS = .TRUE.
+                 ENDIF
+c                                  SOMMA(I) = SOMMA(I)+VALUES_GR(I,J,ITT)
+                                  ICOUNT = ICOUNT + 1
+				  
+                                  ARR(ICOUNT) = VALUES_GR(I,J,ITT)
+                  
+
+                              ENDDO
+
+                              MVAL = NINT( PERCENTILE(ICODE,UI,IPOST) 
+     &                               * ICOUNT * 0.01 )
+			      
+                              CALL SORT( ARR, ICOUNT, WARR ) 
+                              VALUES(I) = WARR(MVAL)
+			       
+                          
+                              IF (LMISS) THEN ! RBI 20130101
+                                  VALUES(I) = VAL_MISSING
+                              ENDIF
+
+                              IF (VALUES(I) .GT. VMAX_INFO) THEN !20130101
+                                  VMAX_INFO = VALUES(I)
+                              ENDIF
+
+                           ENDDO
+
+C                           --- Now encode and write
+                        CALL ENCODEG(VALUES,VAL_MISSING,PREC,NX,STRING)
+                           WRITE (LOUT,'(A)') STRING(1:LSTRIM(STRING))
+               
+                           IF (LDEBUG) THEN
+                IF (J. EQ. NY/2) THEN   !CHO 20190101
+                 WRITE(6,*) 'PCT DIEL MMHH, START STEP , END STEP  ,'//
+     &                                 'NUMBER DAYS, SAMPLE VALUE'
+                 WRITE(6,*) ICURRMD(ITO), ITBEGMD(ITO), ITENDMD(ITO), 
+     &                                 ICOUNT,VALUES(NX/2)
+                ENDIF
+               ENDIF
+
+                        ENDDO
+                     ENDDO
+
+                    IF (LDEBUG) THEN
+                     WRITE(6,*) ' '
+                     WRITE(6,*) 'Maximum value for this statistics : ',
+     &                           VMAX_INFO
+                     WRITE(6,*) ' '
+                    ENDIF
+
+
+                 ELSE !not D, M, or Q or MD time period averaging for max / pct, i.e. use IAVGH for periods
 
                      VMAX_INFO = VAL_MISSING
                      DO J = NY, 1, -1
@@ -339,7 +460,7 @@ C                       --- Now encode and write
                            IF (LMISS) THEN
                                VALUES(I) = VAL_MISSING
                            ELSE 
-                               CALL SORT( ARR, ITOUT, WARR )
+                               CALL SORT( ARR, ITOUT, WARR ) !not sure this works because ARR appears to be empty
                                VALUES(I) = WARR(MVAL)
                            ENDIF
 
@@ -590,7 +711,7 @@ C                           --- Now encode and write
                     ENDIF
 
 
-                 ELSE ! not D, M or Q averaging, i.e. "P" period averaging
+                 ELSE ! not D, M or Q averaging or MD averaging, i.e. "P" period averaging
 
                      VMAX_INFO = VAL_MISSING        ! RBI 20130101
                      DO IT = 1, NTOUT
@@ -653,7 +774,7 @@ C                   --- Now encode and write
                     ENDIF
                  ENDIF
 
-             ELSE
+             ELSE !neither MAX/PCT nor AVG/INT
 
                  WRITE(6,*) 'ERROR'
                  WRITE(6,*) STATISTICS(ICODE,UI,IPOST),
