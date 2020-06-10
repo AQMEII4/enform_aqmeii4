@@ -5,7 +5,7 @@
       LOGICAL LDEBUG, LDEBUG_VERBOSE
 C
       PARAMETER (NXM=565,NYM=281,NTMAX=8800,NITEMS_MAX=1,NPOSTS_MAX=5)
-      PARAMETER (NUC_MAX = 60) ! maximum number of substances (variables)
+      PARAMETER (NUC_MAX = 99) ! maximum number of substances (variables)
 
       PARAMETER (ALON_RANGE_MIN = -180., ALON_RANGE_MAX = 180.)
       PARAMETER (ALAT_RANGE_MIN =  -90., ALAT_RANGE_MAX =  90.)
