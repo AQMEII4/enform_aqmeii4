@@ -354,36 +354,57 @@ c          ENDDO
 
                               LMISS = .FALSE.
                   
-                              ICOUNT = 0
+			      ICVALID = 0
+			      ICTOTAL = 0
+			      
                               DO ITT = ITBEGMD(ITO), ITENDMD(ITO), 24
 
                  ! RBI 20130101  - set to missing the statitics
                  ! if the model has a non valid value
-                 IF (ABS(VALUES_GR(I,J,ITT) - VAL_MISSING).LT.EPS) THEN 
-                     LMISS = .TRUE.
-                 ENDIF
+!                 IF (ABS(VALUES_GR(I,J,ITT) - VAL_MISSING).LT.EPS) THEN 
+!                     LMISS = .TRUE.
+!                 ENDIF
 c                                  SOMMA(I) = SOMMA(I)+VALUES_GR(I,J,ITT)
-                                  ICOUNT = ICOUNT + 1
+
+
+                                ICTOTAL = ICTOTAL + 1
+
+                                IF (ABS(VALUES_GR(I,J,ITT) - 
+     &                              VAL_MISSING).GT.EPS) THEN !CHO 20200616
+
+                                  ICVALID = ICVALID + 1
+				  				  
+                                  ARR(ICVALID) = VALUES_GR(I,J,ITT)
 				  
-                                  ARR(ICOUNT) = VALUES_GR(I,J,ITT)
-                  
+				ENDIF
 
                               ENDDO
 
-                              MVAL = NINT( PERCENTILE(ICODE,UI,IPOST) 
-     &                               * ICOUNT * 0.01 )
+			      IF ( (ICVALID .GT. 0) .AND. 
+     &                             (ICVALID .GE. 
+     &                              INT(0.75*FLOAT(ICTOTAL))) ) THEN
+
+                               MVAL = NINT( PERCENTILE(ICODE,UI,IPOST) 
+     &                               * ICVALID * 0.01 )
 			      
-                              CALL SORT( ARR, ICOUNT, WARR ) 
-                              VALUES(I) = WARR(MVAL)
+                               CALL SORT( ARR, ICVALID, WARR ) 
+                               VALUES(I) = WARR(MVAL)
 			       
-                          
-                              IF (LMISS) THEN ! RBI 20130101
+			      ELSE
+			      
                                   VALUES(I) = VAL_MISSING
-                              ENDIF
+			      
+			      ENDIF
+                          
+!                              IF (LMISS) THEN ! RBI 20130101
+!                                  VALUES(I) = VAL_MISSING
+!                              ENDIF
 
                               IF (VALUES(I) .GT. VMAX_INFO) THEN !20130101
                                   VMAX_INFO = VALUES(I)
                               ENDIF
+			      
+			      IF (I. EQ. NX/2) ICVALID_DBG = ICVALID
 
                            ENDDO
 
@@ -396,7 +417,7 @@ C                           --- Now encode and write
                  WRITE(6,*) 'PCT DIEL MMHH, START STEP , END STEP  ,'//
      &                                 'NUMBER DAYS, SAMPLE VALUE'
                  WRITE(6,*) ICURRMD(ITO), ITBEGMD(ITO), ITENDMD(ITO), 
-     &                                 ICOUNT,VALUES(NX/2)
+     &                                 ICVALID_DBG,VALUES(NX/2)
                 ENDIF
                ENDIF
 
@@ -551,29 +572,50 @@ C ---------------------------------------------------------------------
                               SOMMA(I) = 0.
 
                               LMISS = .FALSE.
+			      ICVALID = 0
+			      ICTOTAL = 0
                               DO ITT = ITBEG, ITEND
 
                  ! RBI 20130101  - set to missing the statistics
                  ! if the model has a non valid value
-                 IF (ABS(VALUES_GR(I,J,ITT) - VAL_MISSING).LT.EPS) THEN 
-                     LMISS = .TRUE.
-                 ENDIF
+!                 IF (ABS(VALUES_GR(I,J,ITT) - VAL_MISSING).LT.EPS) THEN 
+!                     LMISS = .TRUE.
+!                 ENDIF
+
+                                ICTOTAL = ICTOTAL + 1
+				
+                                IF ( ABS(VALUES_GR(I,J,ITT) - 
+     &                               VAL_MISSING).GT.EPS) THEN !CHO 20200616
+
+                                  ICVALID = ICVALID + 1
                                   SOMMA(I) = SOMMA(I)+VALUES_GR(I,J,ITT)
+				  
+				ENDIF
 
-                              ENDDO
+                              ENDDO 
+			      
+			      IF ( (ICVALID .GT. 0) .AND. 
+     &                             (ICVALID .GE. 
+     &                             INT(0.75*FLOAT(ICTOTAL))) ) THEN
 
-                              ! INT
-                              VALUES(I) = SOMMA(I)
+                               ! INT
+                               VALUES(I) = SOMMA(I)
 
-                              ! AVG
-                              IF (STATISTICS(ICODE,UI,IPOST) .EQ. 'AVG')
-     &                        THEN
-                                  VALUES(I) = VALUES(I)/FLOAT(ICOUNT)
-                              ENDIF
-                           
-                              IF (LMISS) THEN ! RBI 20130101
+                               ! AVG
+                               IF (STATISTICS(ICODE,UI,IPOST) 
+     &                             .EQ. 'AVG') THEN
+                                  VALUES(I) = VALUES(I)/FLOAT(ICVALID)
+                               ENDIF
+
+                              ELSE
+			      
                                   VALUES(I) = VAL_MISSING
-                              ENDIF
+				  
+			      ENDIF
+			                                 
+!                              IF (LMISS) THEN ! RBI 20130101
+!                                  VALUES(I) = VAL_MISSING
+!                              ENDIF
 
                               IF (VALUES(I) .GT. VMAX_INFO) THEN !20130101
                                   VMAX_INFO = VALUES(I)
@@ -653,37 +695,58 @@ c          ENDDO
                               SOMMA(I) = 0.
 
                               LMISS = .FALSE.
+			      ICVALID = 0
+			      ICTOTAL = 0
                   
-                  ICOUNT = 0
                               DO ITT = ITBEGMD(ITO), ITENDMD(ITO), 24
 
                  ! RBI 20130101  - set to missing the statitics
                  ! if the model has a non valid value
-                 IF (ABS(VALUES_GR(I,J,ITT) - VAL_MISSING).LT.EPS) THEN 
-                     LMISS = .TRUE.
-                 ENDIF
+!                 IF (ABS(VALUES_GR(I,J,ITT) - VAL_MISSING).LT.EPS) THEN 
+!                     LMISS = .TRUE.
+!                 ENDIF
+
+                                ICTOTAL = ICTOTAL + 1
+
+                                IF (ABS(VALUES_GR(I,J,ITT) - 
+     &                              VAL_MISSING).GT.EPS) THEN !CHO 20200616
+				
+                                  ICVALID = ICVALID + 1           
                                   SOMMA(I) = SOMMA(I)+VALUES_GR(I,J,ITT)
-                  
-                  ICOUNT = ICOUNT + 1
+                                
+				ENDIF
 
                               ENDDO
 
-                              ! INT
-                              VALUES(I) = SOMMA(I)
+                  
+			      IF ( (ICVALID .GT. 0) .AND. 
+     &                             (ICVALID .GE. 
+     &                              INT(0.75*FLOAT(ICTOTAL))) ) THEN
 
-                              ! AVG
-                              IF (STATISTICS(ICODE,UI,IPOST) .EQ. 'AVG')
-     &                        THEN
-                                  VALUES(I) = VALUES(I)/FLOAT(ICOUNT)
-                              ENDIF
-                           
-                              IF (LMISS) THEN ! RBI 20130101
+                               ! INT
+                               VALUES(I) = SOMMA(I)
+
+                               ! AVG
+                               IF (STATISTICS(ICODE,UI,IPOST)
+     &                          .EQ. 'AVG') THEN
+                                  VALUES(I) = VALUES(I)/FLOAT(ICVALID)
+                               ENDIF
+			       
+			      ELSE
+			      
                                   VALUES(I) = VAL_MISSING
-                              ENDIF
+				  
+			      ENDIF
+                           
+!                              IF (LMISS) THEN ! RBI 20130101
+!                                  VALUES(I) = VAL_MISSING
+!                              ENDIF
 
                               IF (VALUES(I) .GT. VMAX_INFO) THEN !20130101
                                   VMAX_INFO = VALUES(I)
                               ENDIF
+
+			      IF (I. EQ. NX/2) ICVALID_DBG = ICVALID
 
                            ENDDO
 
@@ -696,7 +759,7 @@ C                           --- Now encode and write
                  WRITE(6,*) 'AV DIEL MMHH, START STEP , END STEP  ,'//
      &                                 'NUMBER DAYS, SAMPLE VALUE'
                  WRITE(6,*) ICURRMD(ITO), ITBEGMD(ITO), ITENDMD(ITO), 
-     &                                 ICOUNT,VALUES(NX/2)
+     &                                 ICVALID_DBG,VALUES(NX/2)
                 ENDIF
                ENDIF
 
@@ -722,36 +785,58 @@ C                           --- Now encode and write
 
                               SOMMA(I) = 0.
  
-                              LMISS = .FALSE.   
+                              LMISS = .FALSE.
+			      ICVALID = 0
+			      ICTOTAL = 0   
 
                               DO ITT = 1, IAVGH
                                  ITO = (IT-1)*IAVGH + ITT
 
                  ! RBI 20130101  - set to missing the statitics
                  ! if the model has a non valid value
-                 IF (.NOT.LMISS .AND.
-     &                ABS(VALUES_GR(I,J,ITT) - VAL_MISSING).LT.EPS) THEN
-                     LMISS = .TRUE.
-                 ENDIF
+!                 IF (.NOT.LMISS .AND.
+!     &                ABS(VALUES_GR(I,J,ITT) - VAL_MISSING).LT.EPS) THEN
+!                     LMISS = .TRUE.
+!                 ENDIF
 
-                                SOMMA(I) = SOMMA(I) + VALUES_GR(I,J,ITO)
+                                ICTOTAL = ICTOTAL + 1
+
+                                IF (ABS(VALUES_GR(I,J,ITO) - 
+     &                              VAL_MISSING).GT.EPS) THEN !CHO 20200616
+				
+                                 ICVALID = ICVALID + 1           
+                                 SOMMA(I) = SOMMA(I) + 
+     &                            VALUES_GR(I,J,ITO)
+				  
+				ENDIF
+				
                               ENDDO 
 
+			      IF ( (ICVALID .GT. 0) .AND. 
+     &                             (ICVALID .GE. 
+     &                              INT(0.75*FLOAT(ICTOTAL))) ) THEN
 
-                              ! INT     
-                              VALUES(I) = SOMMA(I)
 
-                              SOMMA(I) = 0.
+                               ! INT     
+                               VALUES(I) = SOMMA(I)
 
-                              ! AVG
-                              IF (STATISTICS(ICODE,UI,IPOST) .EQ. 'AVG')
-     &                        THEN
-                                  VALUES(I) = VALUES(I) / FLOAT(IAVGH)
-                              ENDIF
+                               SOMMA(I) = 0.
 
-                              IF (LMISS) THEN ! RBI 20130101
-                                  VALUES(I) = VAL_MISSING
-                              ENDIF
+                               ! AVG
+                               IF (STATISTICS(ICODE,UI,IPOST) 
+     &                          .EQ. 'AVG') THEN
+                                 VALUES(I) = VALUES(I) / FLOAT(ICVALID)
+                               ENDIF
+
+                              ELSE
+			      
+			       VALUES(I) = VAL_MISSING
+			       
+			      ENDIF
+			      
+!                              IF (LMISS) THEN ! RBI 20130101
+!                                  VALUES(I) = VAL_MISSING
+!                              ENDIF
 
                               IF (VALUES(I) .GT. VMAX_INFO) THEN !20130101
                                   VMAX_INFO = VALUES(I)
