@@ -25,7 +25,7 @@ C --- Write output file headers
       WRITE(LOUT,'(A7)') SOURCE_RANDOM_KEY
       WRITE(LOUT,'(I4.4)') SOURCE_SEQUENCE_NUMBER
       WRITE(LOUT,'(I3.3)') SOURCE_CASE_NUMBER
-      WRITE(LOUT,'(A20)') USER_VAR
+      WRITE(LOUT,'(A6)') USER_VAR
       WRITE(LOUT,'(I2)') UI
       WRITE(LOUT,'(E11.4)') VAL_MISSING
       PREC = VAR_ITEMS_PRECISION(ICODE,UI)
@@ -88,6 +88,20 @@ C ---      Time series
               REWIND(LSCR)
               READ(LSCR,*) IRINDEX, ( VAL(IT,K), K=1,NZ )
               CLOSE(LSCR)
+
+C ---         Invert resistances 
+
+              IF (USER_VAR(1:4) .EQ. 'RES-' ) THEN !invert resistances
+	       DO K = 1, NZ
+	        IF (VAL(IT,K) .GT. MIN_POS) THEN
+	         VAL(IT,K) = 1. / VAL(IT,K)
+	        ELSE
+	         IF (ABS(VAL(IT,K) - VAL_MISSING).GT.EPS) THEN
+	          VAL(IT,K) = 1. / MIN_POS
+	         ENDIF
+	        ENDIF
+	       ENDDO !K
+	      ENDIF 
 
               
               READ(DUMMY(1:12),'(I4.4,4I2.2)',ERR=920)
