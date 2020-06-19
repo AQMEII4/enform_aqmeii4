@@ -380,9 +380,9 @@ c                                  SOMMA(I) = SOMMA(I)+VALUES_GR(I,J,ITT)
 
                               ENDDO
 
-			      IF ( (ICVALID .GT. 0) .AND. 
-     &                             (ICVALID .GE. 
-     &                              INT(0.75*FLOAT(ICTOTAL))) ) THEN
+			      IF ((ICVALID .GT. 0) .AND. 
+     &                            (ICVALID .GE. 
+     &                             INT(PCT_CMPLT*FLOAT(ICTOTAL))) ) THEN
 
                                MVAL = NINT( PERCENTILE(ICODE,UI,IPOST) 
      &                               * ICVALID * 0.01 )
@@ -596,7 +596,7 @@ C ---------------------------------------------------------------------
 			      
 			      IF ( (ICVALID .GT. 0) .AND. 
      &                             (ICVALID .GE. 
-     &                             INT(0.75*FLOAT(ICTOTAL))) ) THEN
+     &                             INT(PCT_CMPLT*FLOAT(ICTOTAL))) ) THEN
 
                                ! INT
                                VALUES(I) = SOMMA(I)
@@ -719,9 +719,9 @@ c          ENDDO
                               ENDDO
 
                   
-			      IF ( (ICVALID .GT. 0) .AND. 
-     &                             (ICVALID .GE. 
-     &                              INT(0.75*FLOAT(ICTOTAL))) ) THEN
+			      IF ((ICVALID .GT. 0) .AND. 
+     &                            (ICVALID .GE. 
+     &                             INT(PCT_CMPLT*FLOAT(ICTOTAL))) ) THEN
 
                                ! INT
                                VALUES(I) = SOMMA(I)
@@ -812,9 +812,9 @@ C                           --- Now encode and write
 				
                               ENDDO 
 
-			      IF ( (ICVALID .GT. 0) .AND. 
-     &                             (ICVALID .GE. 
-     &                              INT(0.75*FLOAT(ICTOTAL))) ) THEN
+			      IF ((ICVALID .GT. 0) .AND. 
+     &                            (ICVALID .GE. 
+     &                             INT(PCT_CMPLT*FLOAT(ICTOTAL))) ) THEN
 
 
                                ! INT     
