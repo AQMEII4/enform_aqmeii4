@@ -54,7 +54,7 @@ C
       REAL TMP_MOD, XX, YY
       REAL VAL_MISSING, FMAX, PREC
       REAL VALUES(NXM)
-      CHARACTER STRING*8128
+      CHARACTER STRING*32512
       CHARACTER NXFMT*4
       CHARACTER FORMSTRING*37
       CHARACTER USER_RANDOM_KEY*7
@@ -514,9 +514,14 @@ C     they will store the error message in case an error occours.
 
              IF (STATISTICS(ICODE,USER_ITEM,IPOST) .EQ. 'MAX' .OR.
      &           STATISTICS(ICODE,USER_ITEM,IPOST) .EQ. 'PCT') THEN
-                 DO K = 1, 5
+                 IF (AVERAGING(ICODE,USER_ITEM,IPOST) .NE. 'MD') THEN
+                  DO K = 1, 5
                     OUTPUT_DATES_WORK(K,1) = SOURCE_FIRST_OUTPUT(K)
-                 ENDDO
+                  ENDDO
+		 ELSE
+                     CALL GENERATE_OUTPUT_DATES_MD(OUTPUT_DATES,
+     &                    OUTPUT_DATES_WORK,NT)		 
+		 ENDIF
              ELSE
                  CALL GENERATE_DATES(SOURCE_FIRST_OUTPUT,
      &                OUTPUT_DATES,DELTA_MINUTES,NT)

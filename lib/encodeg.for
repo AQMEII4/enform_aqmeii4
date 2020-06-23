@@ -59,9 +59,9 @@ C
              ! Round to PREC precision
              VAL = VALUES(I)
              IF (VAL .LT. 0) THEN 
-                 IWORK(I) = - INT( - VALUES(I) / PREC + 0.5 )
+                 IWORK(I) = - INT( (- VALUES(I) / PREC + 0.5),8 )
              ELSE
-                 IWORK(I) = INT( VALUES(I) / PREC + 0.5 )
+                 IWORK(I) = INT( (VALUES(I) / PREC + 0.5),8 )
              ENDIF
              IF (.NOT.LMIN) THEN
                  IMIN = IWORK(I)

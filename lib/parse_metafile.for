@@ -39,7 +39,7 @@ C
       INTEGER IVRB, ITM, IPST
       INTEGER NITEMS, NPOSTS
 C
-      CHARACTER*128 DUMMY_READ
+      CHARACTER*200 DUMMY_READ
       CHARACTER     TMP_DATE*12
       REAL          ARRAY1( MAXVAL )
       INTEGER       ARRAY2( MAXVAL )
@@ -384,6 +384,7 @@ C           --- Read item index, description, units, precision and missing value
             ENDIF
             IVAR = 5
             NDIMR = 1
+	    
             CALL READREC( DUMMY_READ, NL, IVAR, NDIMR, ARRAY1, ARRAY2,
      &                  ARRAY3, ARRAY4, ARRAY5 )
 

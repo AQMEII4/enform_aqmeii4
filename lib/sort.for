@@ -102,7 +102,7 @@ C
       DO60I=2,N
       IF(X(I).NE.HOLD)GOTO90
    60 CONTINUE
-      WRITE(IPR, 9)HOLD
+C      WRITE(IPR, 9)HOLD
       DO61I=1,N
       Y(I)=X(I)
    61 CONTINUE

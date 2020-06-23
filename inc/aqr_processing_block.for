@@ -89,6 +89,20 @@ C ---      Time series
               READ(LSCR,*) IRINDEX, ( VAL(IT,K), K=1,NZ )
               CLOSE(LSCR)
 
+C ---         Invert resistances 
+
+              IF (USER_VAR(1:4) .EQ. 'RES-' ) THEN !invert resistances
+	       DO K = 1, NZ
+	        IF (VAL(IT,K) .GT. MIN_POS) THEN
+	         VAL(IT,K) = 1. / VAL(IT,K)
+	        ELSE
+	         IF (ABS(VAL(IT,K) - VAL_MISSING).GT.EPS) THEN
+	          VAL(IT,K) = 1. / MIN_POS
+	         ENDIF
+	        ENDIF
+	       ENDDO !K
+	      ENDIF 
+
               
               READ(DUMMY(1:12),'(I4.4,4I2.2)',ERR=920)
      &                          (READ_DATE(K),K=1,5)
