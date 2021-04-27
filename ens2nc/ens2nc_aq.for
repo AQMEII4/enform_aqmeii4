@@ -633,8 +633,8 @@ C     Assign units attributes to coordinate and variables.
      &            'latitude')
          IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
          RETVAL = NF_PUT_ATT_TEXT(NCID, LAT_VARID,
-     &            'long_name', len(TRIM('Latitude')),
-     &            'Latitude')
+     &            'long_name', len(TRIM('latitude')),
+     &            'latitude')
          IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
          RETVAL = NF_PUT_ATT_TEXT(NCID, LAT_VARID,
      &            'bounds', len(TRIM(LAT_BOUNDS_NAME)),
@@ -652,8 +652,8 @@ C     Assign units attributes to coordinate and variables.
      &            'longitude')
          IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
          RETVAL = NF_PUT_ATT_TEXT(NCID, LON_VARID,
-     &            'long_name', len(TRIM('Longitude')),
-     &            'Longitude')
+     &            'long_name', len(TRIM('longitude')),
+     &            'longitude')
          IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
          RETVAL = NF_PUT_ATT_TEXT(NCID, LON_VARID,
      &            'bounds', len(TRIM(LON_BOUNDS_NAME)),
