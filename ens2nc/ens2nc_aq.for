@@ -37,6 +37,9 @@ C                  : 20140228 RBI - Fix to variable name
 C                                 - Update of USER_VAR length from 6 to 20
 C                                 - Update to call arguments for DECODEG
 C                  : 20171204 RBI - Accepting versions 2013, 204, 2.00
+C                  : 20210427 CHO - Update georeferencing: recalculate
+C                                   latitude and longitude to represent cell
+C                                   centers and add bounds variables
 C
 C---------------------------------------------------------------ENS2NC_AQ---
 C
@@ -93,7 +96,7 @@ C     PARAMETER (DATASET_FORMAT = 'CLASSIC_MODEL')    ! writes NetCDF v.3 files
 
       INTEGER NDIMS
       PARAMETER (NDIMS = 4)
-      INTEGER LVL_DIMID, LON_DIMID, LAT_DIMID, TIME_DIMID
+      INTEGER LVL_DIMID, LON_DIMID, LAT_DIMID, TIME_DIMID, BOUNDS_DIMID
       INTEGER VAL_MISSING_DIMID 
       INTEGER NCID
 
@@ -107,8 +110,11 @@ C     These program variables hold the latitudes and longitudes.
       !real lats(NLATS), lons(NLONS)
       REAL, ALLOCATABLE, DIMENSION(:) :: LATS
       REAL, ALLOCATABLE, DIMENSION(:) :: LONS
+      REAL, ALLOCATABLE, DIMENSION(:,:) :: LAT_BOUNDS
+      REAL, ALLOCATABLE, DIMENSION(:,:) :: LON_BOUNDS
 
       INTEGER LON_VARID, LAT_VARID, TIME_VARID
+      INTEGER LAT_BOUNDS_VARID, LON_BOUNDS_VARID
 
       REAL, ALLOCATABLE, DIMENSION(:,:,:) :: ALLVAL
 C     Error handling.
@@ -127,13 +133,18 @@ C http://www.unidata.ucar.edu/software/netcdf/docs/netcdf-f77.html#NF_005fDEF_00
 C     Global attributes (will be read from .e2n file and .cf file)
 !     CHARACTER*(*) CONVENTIONS    ! Conventions 2.6 CF1.6
       CHARACTER*(*) LVL_NAME, LAT_NAME, LON_NAME, TIME_NAME
+      CHARACTER*(*) BOUNDS_NAME ! bounds dimension
+      CHARACTER*(*) LAT_BOUNDS_NAME, LON_BOUNDS_NAME !variables
 !     CHARACTER*(*) TIME_UNITS    ! Conventions 4.4 CF1.6
       CHARACTER*(*) TIME_LONG_NAME    ! Conventions 4.4 CF1.6
-      INTEGER NLVLS, NLATS, NLONS
+      INTEGER NLVLS, NLATS, NLONS, NBOUNDS
 
       PARAMETER (LVL_NAME = 'level')   ! We have 1 ens for each level. 
                                        ! We need to specify height somewhere
       PARAMETER (LAT_NAME = 'latitude', LON_NAME = 'longitude') !  These might become parameters
+      PARAMETER (BOUNDS_NAME = 'nbnds') ! dimension
+      PARAMETER (LAT_BOUNDS_NAME = 'latitude_bnds') !variable
+      PARAMETER (LON_BOUNDS_NAME = 'longitude_bnds') !variable
       PARAMETER (TIME_NAME = 'time')
       PARAMETER (TIME_LONG_NAME = 'time')
 
@@ -482,16 +493,24 @@ C --- Here we prepare some netCDF variables of general use
       NLVLS = 1
       NLONS = NX
       NLATS = NY
+      NBOUNDS = 2
 
       ALLOCATE (LONS(NX))
       ALLOCATE (LATS(NY))
       ALLOCATE (ALLVAL(NX,NY,1))
+      ALLOCATE (LON_BOUNDS(NBOUNDS,NX))
+      ALLOCATE (LAT_BOUNDS(NBOUNDS,NY))
+
 
       DO I = 1, NX
-         LONS(I) = X_MIN + (I-1) * DX
+         LONS(I) = X_MIN + (I-1) * DX + 0.5 * DX
+         LON_BOUNDS(1,I) = X_MIN + (I-1) * DX
+         LON_BOUNDS(2,I) = X_MIN + I * DX
       ENDDO
       DO I = 1, NY
-         LATS(I) = Y_MIN + (I-1) * DY
+         LATS(I) = Y_MIN + (I-1) * DY + 0.5 * DY
+         LAT_BOUNDS(1,I) = Y_MIN + (I-1) * DY
+         LAT_BOUNDS(2,I) = Y_MIN + I * DY
       ENDDO
 
 C --- Now loop on the statistics that the file might contain.
@@ -572,6 +591,8 @@ C     needed.
          IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
          RETVAL = NF_DEF_DIM(NCID, LON_NAME, NLONS, LON_DIMID)
          IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
+         RETVAL = NF_DEF_DIM(NCID, BOUNDS_NAME, NBOUNDS, BOUNDS_DIMID)
+         IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
          RETVAL = NF_DEF_DIM(NCID, TIME_NAME, NF_UNLIMITED, TIME_DIMID)
          IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
 
@@ -585,6 +606,18 @@ C     Define the coordinate  and time variables.
          RETVAL = NF_DEF_VAR(NCID, TIME_NAME, NF_INT, 1,
      &            TIME_DIMID, TIME_VARID)
          IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
+         DIMIDS(1) = BOUNDS_DIMID
+         DIMIDS(2) = LAT_DIMID
+         RETVAL = NF_DEF_VAR(NCID, LAT_BOUNDS_NAME,
+     &                       NF_REAL, 2, DIMIDS, 
+     &                       LAT_BOUNDS_VARID)
+         IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
+         DIMIDS(1) = BOUNDS_DIMID
+         DIMIDS(2) = LON_DIMID
+         RETVAL = NF_DEF_VAR(NCID, LON_BOUNDS_NAME,
+     &                       NF_REAL, 2, DIMIDS, 
+     &                       LON_BOUNDS_VARID)
+         IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
 
 C     Assign units attributes to coordinate and variables.
          RETVAL = NF_PUT_ATT_TEXT(NCID, LAT_VARID, 
@@ -595,12 +628,46 @@ C     Assign units attributes to coordinate and variables.
          RETVAL = NF_PUT_ATT_TEXT(NCID, LAT_VARID, 
      &            'axis',1,'Y')
          IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
+         RETVAL = NF_PUT_ATT_TEXT(NCID, LAT_VARID,
+     &            'standard_name', len(TRIM('latitude')),
+     &            'latitude')
+         IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
+         RETVAL = NF_PUT_ATT_TEXT(NCID, LAT_VARID,
+     &            'long_name', len(TRIM('latitude')),
+     &            'latitude')
+         IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
+         RETVAL = NF_PUT_ATT_TEXT(NCID, LAT_VARID,
+     &            'bounds', len(TRIM(LAT_BOUNDS_NAME)),
+     &            LAT_BOUNDS_NAME)
+         IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
          RETVAL = NF_PUT_ATT_TEXT(NCID, LON_VARID,
      &            'units', len(TRIM(CF_LONGITUDE_UNITS)), 
      6            TRIM(CF_LONGITUDE_UNITS))
          IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
          RETVAL = NF_PUT_ATT_TEXT(NCID, LON_VARID, 
      &            'axis',1,'X')
+         IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
+         RETVAL = NF_PUT_ATT_TEXT(NCID, LON_VARID,
+     &            'standard_name', len(TRIM('longitude')),
+     &            'longitude')
+         IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
+         RETVAL = NF_PUT_ATT_TEXT(NCID, LON_VARID,
+     &            'long_name', len(TRIM('longitude')),
+     &            'longitude')
+         IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
+         RETVAL = NF_PUT_ATT_TEXT(NCID, LON_VARID,
+     &            'bounds', len(TRIM(LON_BOUNDS_NAME)),
+     &            LON_BOUNDS_NAME)
+         IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
+         RETVAL = NF_PUT_ATT_TEXT(NCID, LAT_BOUNDS_VARID, 
+     &            'units', 
+     &            len(TRIM(CF_LATITUDE_UNITS)), 
+     &            TRIM(CF_LATITUDE_UNITS))
+         IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
+         RETVAL = NF_PUT_ATT_TEXT(NCID, LON_BOUNDS_VARID, 
+     &            'units', 
+     &            len(TRIM(CF_LONGITUDE_UNITS)), 
+     &            TRIM(CF_LONGITUDE_UNITS))
          IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
          RETVAL = NF_PUT_ATT_TEXT(NCID, TIME_VARID,
      &            'units',
@@ -704,6 +771,12 @@ C     and longitudes of our data grid into the netCDF file.
          IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
          RETVAL = NF_PUT_VAR_REAL(NCID, LON_VARID, LONS)
          IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
+
+         RETVAL = NF_PUT_VAR_REAL(NCID, LAT_BOUNDS_VARID, LAT_BOUNDS)
+         IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
+         RETVAL = NF_PUT_VAR_REAL(NCID, LON_BOUNDS_VARID, LON_BOUNDS)
+         IF (RETVAL .NE. NF_NOERR) CALL HANDLE_ERR(RETVAL)
+ 
 C     These settings tell netcdf to write one timestep of data. (The
 C     setting of START(4) inside the loop below tells netCDF which
 C     timestep to write.)
